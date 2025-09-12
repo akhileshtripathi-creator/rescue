@@ -4,15 +4,14 @@ const connectDB = require("./db");
 const Rescue = require("./models/Rescue");
 
 const app = express();
-const PORT = process.env.PORT || 3000; // ✅ Render assigns PORT dynamically
+const PORT = 3000;
 
 app.use(bodyParser.json());
-app.use(express.static("public"));
-
-// ✅ Connect to MongoDB
+app.use(express.static('public'));
+// ✅ Database connect
 connectDB();
 
-// ✅ POST API
+// POST API
 app.post("/rescue", async (req, res) => {
   const { animalType, location, latitude, longitude } = req.body;
 
@@ -29,7 +28,7 @@ app.post("/rescue", async (req, res) => {
   }
 });
 
-// ✅ GET API
+// GET API
 app.get("/rescue", async (req, res) => {
   try {
     const requests = await Rescue.find().sort({ createdAt: -1 });
@@ -39,7 +38,6 @@ app.get("/rescue", async (req, res) => {
   }
 });
 
-// ✅ Start server
 app.listen(PORT, () => {
-  console.log( Server running at http://localhost:${PORT});
+  console.log("🚀 Server running at http://localhost:" + PORT);
 });
