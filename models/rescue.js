@@ -8,4 +8,4 @@ const rescueSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Rescue", rescueSchema);
+module.exports = mongoose.model("rescue", rescueSchema);
