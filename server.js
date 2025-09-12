@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const connectDB = require("./db");
-const Rescue = require("./models/Rescue");
+const Rescue = require("./models/rescue");
 
 const app = express();
 const PORT = 3000;
