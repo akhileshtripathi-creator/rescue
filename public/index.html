@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Animal Rescue</title>
+  <style>
+    /* Styling same as before — clean and responsive */
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f8f9fa, #e9f5ff);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #0077b6;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2, h3 {
+      text-align: center;
+      color: #023e8a;
+      margin-bottom: 20px;
+    }
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus {
+      border-color: #0077b6;
+      box-shadow: 0 0 5px rgba(0, 119, 182, 0.5);
+    }
+    .btn {
+      padding: 10px 15px;
+      margin: 10px 5px 0 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .btn-primary {
+      background: #0077b6;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #005f8a;
+    }
+    .btn-secondary {
+      background: #48cae4;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #0096c7;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    th {
+      background: #0077b6;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    tr:hover {
+      background: #caf0f8;
+    }
+  </style>
+</head>
+<body>
+  <header>🐾 Paw Aqua Portal</header>
+
+  <div class="container">
+    <h2>Report Animal Rescue</h2>
+
+    <form id="rescueForm">
+      <label>Animal Type:</label>
+      <input type="text" id="animalType" required />
+
+      <label>Manual Location:</label>
+      <input type="text" id="location" required />
+
+      <label>Latitude:</label>
+      <input type="text" id="latitude" required />
+
+      <label>Longitude:</label>
+      <input type="text" id="longitude" required />
+
+      <button type="button" class="btn btn-secondary" onclick="getLocation()">📍 Get Live Location</button>
+      <button type="submit" class="btn btn-primary">🚑 Submit</button>
+    </form>
+
+    <h3>Rescue Requests</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Animal Type</th>
+          <th>Location</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>
+      </thead>
+      <tbody id="rescueList"></tbody>
+    </table>
+  </div>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+          },
+          function (error) {
+            alert("Location Error: " + error.message);
+          }
+        );
+      } else {
+        alert("Geolocation not supported by this browser.");
+      }
+    }
+
+    document.getElementById("rescueForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const data = {
+        animalType: document.getElementById("animalType").value,
+        location: document.getElementById("location").value,
+        latitude: document.getElementById("latitude").value,
+        longitude: document.getElementById("longitude").value
+      };
+
+      if (!data.animalType || !data.location || !data.latitude || !data.longitude) {
+        return alert("⚠ Please fill all fields before submitting.");
+      }
+
+      fetch("/rescue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        const rescue = response.rescue;
+        const table = document.getElementById("rescueList");
+        const newRow = table.insertRow();
+        newRow.innerHTML = `
+          <td>${rescue.animalType}</td>
+          <td>${rescue.location}</td>
+          <td>${rescue.latitude}</td>
+          <td>${rescue.longitude}</td>
+        `;
+        document.getElementById("rescueForm").reset();
+      })
+      .catch(err => alert("Error submitting data: " + err));
+    });
+  </script>
+</body>
+</html>
