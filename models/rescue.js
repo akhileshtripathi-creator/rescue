@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const rescueSchema = new mongoose.Schema({
-  animalType: { type: String, required: true },
+  animal: { type: String, required: true },
   location: { type: String, required: true },
-  latitude: { type: Number, required: true },
-  longitude: { type: Number, required: true },
+  status: { type: String, default: "Pending" },
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("rescue", rescueSchema);
+export default mongoose.model("Rescue", rescueSchema);
