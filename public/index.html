@@ -124,6 +124,9 @@
   </div>
 
   <script>
+    // 👇👇 yaha apna backend Render ka URL daal
+    const BACKEND_URL = "https://<tera-render-backend-url>.onrender.com"; 
+
     document.getElementById("rescueForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
@@ -132,7 +135,7 @@
         location: document.getElementById("location").value
       };
 
-      fetch("/rescue", {
+      fetch(${BACKEND_URL}/rescue, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -156,6 +159,25 @@
       })
       .catch(err => alert("Error submitting data: " + err));
     });
+
+    // 🚀 Load existing rescue requests when page loads
+    window.onload = () => {
+      fetch(${BACKEND_URL}/rescue)
+      .then(res => res.json())
+      .then(requests => {
+        const table = document.getElementById("rescueList");
+        requests.forEach(rescue => {
+          const newRow = table.insertRow();
+          newRow.innerHTML = `
+            <td>${rescue.animalType}</td>
+            <td>${rescue.location}</td>
+            <td>${rescue.latitude}</td>
+            <td>${rescue.longitude}</td>
+          `;
+        });
+      })
+      .catch(err => console.error("Error fetching data: ", err));
+    };
   </script>
 </body>
 </html>
