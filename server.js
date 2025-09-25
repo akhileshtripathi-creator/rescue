@@ -3,13 +3,15 @@ const bodyParser = require("body-parser");
 const connectDB = require("./db");
 const Rescue = require("./models/rescue");
 const axios = require("axios");
+const cors = require("cors");   // 👈 add cors
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;  // 👈 Render ke liye process.env.PORT use karo
 
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static("public"));
+app.use(cors());  // 👈 allow all origins (test ke liye best)
 
 // MongoDB connect
 connectDB();
