@@ -1,17 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const connectDB = require("./db");
-const Rescue = require("./models/Rescue");
+const Rescue = require("./models/rescue");
 
 const app = express();
 const PORT = 3000;
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
-// ✅ Database connect
 connectDB();
 
-// POST API
 app.post("/rescue", async (req, res) => {
   const { animalType, location, latitude, longitude } = req.body;
 
