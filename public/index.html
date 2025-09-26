@@ -124,9 +124,10 @@
   </div>
 
   <script>
-    
-    const BACKEND_URL = "https://rescue-4.onrender.com"; 
+    // 👇 apna backend URL yaha daalo
+    const BACKEND_URL = "https://rescue-4.onrender.com";
 
+    // Form submit
     document.getElementById("rescueForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
@@ -147,34 +148,32 @@
         }
 
         const rescue = response.rescue;
-        const table = document.getElementById("rescueList");
-        const newRow = table.insertRow();
-        newRow.innerHTML = `
-          <td>${rescue.animalType}</td>
-          <td>${rescue.location}</td>
-          <td>${rescue.latitude}</td>
-          <td>${rescue.longitude}</td>
-        `;
+        addRow(rescue);
         document.getElementById("rescueForm").reset();
       })
       .catch(err => alert("Error submitting data: " + err));
     });
 
-    // 🚀 Load existing rescue requests when page loads
+    // Table me row add karne ka function
+    function addRow(rescue) {
+      const table = document.getElementById("rescueList");
+      const newRow = table.insertRow();
+      newRow.innerHTML = `
+        <td>${rescue.animalType}</td>
+        <td>${rescue.location}</td>
+        <td>${rescue.latitude}</td>
+        <td>${rescue.longitude}</td>
+      `;
+    }
+
+    // Page load hone par existing data fetch karo
     window.onload = () => {
       fetch(${BACKEND_URL}/rescue)
       .then(res => res.json())
       .then(requests => {
         const table = document.getElementById("rescueList");
-        requests.forEach(rescue => {
-          const newRow = table.insertRow();
-          newRow.innerHTML = `
-            <td>${rescue.animalType}</td>
-            <td>${rescue.location}</td>
-            <td>${rescue.latitude}</td>
-            <td>${rescue.longitude}</td>
-          `;
-        });
+        table.innerHTML = ""; // purana clear
+        requests.forEach(rescue => addRow(rescue));
       })
       .catch(err => console.error("Error fetching data: ", err));
     };
