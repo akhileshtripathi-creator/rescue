@@ -124,6 +124,9 @@
   </div>
 
   <script>
+    const API_URL = "https://rescue-4.onrender.com/rescue";
+
+    // 🟢 Form Submit
     document.getElementById("rescueForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
@@ -132,7 +135,7 @@
         location: document.getElementById("location").value
       };
 
-      fetch("/rescue", {
+      fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -142,20 +145,34 @@
         if (response.error) {
           return alert("⚠ Error: " + response.error);
         }
-
-        const rescue = response.rescue;
-        const table = document.getElementById("rescueList");
-        const newRow = table.insertRow();
-        newRow.innerHTML = `
-          <td>${rescue.animalType}</td>
-          <td>${rescue.location}</td>
-          <td>${rescue.latitude}</td>
-          <td>${rescue.longitude}</td>
-        `;
+        loadRescues(); // ✅ Submit ke baad list refresh
         document.getElementById("rescueForm").reset();
       })
       .catch(err => alert("Error submitting data: " + err));
     });
+
+    // 🟢 Load all rescues
+    function loadRescues() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const table = document.getElementById("rescueList");
+          table.innerHTML = "";
+          data.forEach(rescue => {
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+              <td>${rescue.animalType}</td>
+              <td>${rescue.location}</td>
+              <td>${rescue.latitude}</td>
+              <td>${rescue.longitude}</td>
+            `;
+          });
+        })
+        .catch(err => console.error("Error loading rescues:", err));
+    }
+
+    // Page load pe data fetch
+    loadRescues();
   </script>
 </body>
 </html>
