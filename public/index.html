@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Animal Rescue</title>
   <style>
-    /* Styling same as before — clean and responsive */
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #f8f9fa, #e9f5ff);
@@ -70,13 +69,6 @@
     .btn-primary:hover {
       background: #005f8a;
     }
-    .btn-secondary {
-      background: #48cae4;
-      color: white;
-    }
-    .btn-secondary:hover {
-      background: #0096c7;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -111,16 +103,9 @@
       <label>Animal Type:</label>
       <input type="text" id="animalType" required />
 
-      <label>Manual Location:</label>
+      <label>Location (City/Area):</label>
       <input type="text" id="location" required />
 
-      <label>Latitude:</label>
-      <input type="text" id="latitude" required />
-
-      <label>Longitude:</label>
-      <input type="text" id="longitude" required />
-
-      <button type="button" class="btn btn-secondary" onclick="getLocation()">📍 Get Live Location</button>
       <button type="submit" class="btn btn-primary">🚑 Submit</button>
     </form>
 
@@ -139,35 +124,13 @@
   </div>
 
   <script>
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            document.getElementById("latitude").value = position.coords.latitude;
-            document.getElementById("longitude").value = position.coords.longitude;
-          },
-          function (error) {
-            alert("Location Error: " + error.message);
-          }
-        );
-      } else {
-        alert("Geolocation not supported by this browser.");
-      }
-    }
-
     document.getElementById("rescueForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
       const data = {
         animalType: document.getElementById("animalType").value,
-        location: document.getElementById("location").value,
-        latitude: document.getElementById("latitude").value,
-        longitude: document.getElementById("longitude").value
+        location: document.getElementById("location").value
       };
-
-      if (!data.animalType || !data.location || !data.latitude || !data.longitude) {
-        return alert("⚠ Please fill all fields before submitting.");
-      }
 
       fetch("/rescue", {
         method: "POST",
@@ -176,6 +139,10 @@
       })
       .then(res => res.json())
       .then(response => {
+        if (response.error) {
+          return alert("⚠ Error: " + response.error);
+        }
+
         const rescue = response.rescue;
         const table = document.getElementById("rescueList");
         const newRow = table.insertRow();
@@ -191,4 +158,4 @@
     });
   </script>
 </body>
-</html>n
+</html>
