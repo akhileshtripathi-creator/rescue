@@ -3,20 +3,30 @@ const bodyParser = require("body-parser");
 const connectDB = require("./db");
 const Rescue = require("./models/rescue");
 const axios = require("axios");
-const cors = require("cors");   // 👈 add cors
+const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 3000;  // 👈 Render ke liye process.env.PORT use karo
+const PORT = process.env.PORT || 3000; // Render ke liye
 
-// Middleware
+// ✅ Middleware
 app.use(bodyParser.json());
 app.use(express.static("public"));
-app.use(cors());  // 👈 allow all origins (test ke liye best)
 
-// MongoDB connect
+// ✅ CORS setup
+app.use(
+  cors({
+    origin: "*", // sab domains allow (baad me specific kar sakte ho)
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+// ✅ MongoDB connect
 connectDB();
 
-// POST API (Rescue Request Save)
+// ==========================
+// POST API (Save Rescue)
+// ==========================
 app.post("/rescue", async (req, res) => {
   const { animalType, location, latitude, longitude } = req.body;
 
@@ -30,7 +40,7 @@ app.post("/rescue", async (req, res) => {
     let lat = latitude;
     let lng = longitude;
 
-    // agar lat/lng frontend se nahi aaye to geocoding use karo
+    // Agar lat/lng nahi hai to geocoding se fetch karo
     if (!lat || !lng) {
       const geoRes = await axios.get(
         "https://nominatim.openstreetmap.org/search",
@@ -39,6 +49,9 @@ app.post("/rescue", async (req, res) => {
             q: location,
             format: "json",
             limit: 1,
+          },
+          headers: {
+            "User-Agent": "animal-rescue-app", // ⚠ zaruri hai
           },
         }
       );
@@ -65,7 +78,9 @@ app.post("/rescue", async (req, res) => {
   }
 });
 
+// ==========================
 // GET API (All Rescue Requests)
+// ==========================
 app.get("/rescue", async (req, res) => {
   try {
     const requests = await Rescue.find().sort({ createdAt: -1 });
@@ -75,7 +90,9 @@ app.get("/rescue", async (req, res) => {
   }
 });
 
+// ==========================
 // Server Run
+// ==========================
 app.listen(PORT, () => {
   console.log("🚀 Server running at http://localhost:" + PORT);
 });
